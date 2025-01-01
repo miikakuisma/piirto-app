@@ -11,7 +11,6 @@ declare module 'react' {
         'paper-height'?: string;
         'paper-color'?: string;
       };
-      setBrushSize: (size: number) => void;
     }
   }
 }
@@ -36,14 +35,18 @@ declare global {
 }
 
 export default function Home() {
+  const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+
   useEffect(() => {
-    window.addEventListener("message", launchStuff)
+    setDimensions({ width: window.innerWidth, height: window.innerHeight });
+
+    window.addEventListener("message", launchStuff);
 
     return () => {
-      window.removeEventListener("message", launchStuff)
-    }
+      window.removeEventListener("message", launchStuff);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   interface LaunchMessage extends MessageEvent {
     data: {
@@ -89,8 +92,8 @@ export default function Home() {
 
   return (<>
     <tatami-canvas
-      paper-width={window.innerWidth.toString()}
-      paper-height={window.innerHeight.toString()}
+      paper-width={dimensions.width.toString()}
+      paper-height={dimensions.height.toString()}
       paper-color="#ffffff"
     ></tatami-canvas>
 
