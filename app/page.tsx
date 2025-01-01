@@ -102,7 +102,7 @@ export default function Home() {
   const ColorButton = ({ color }: { color: string }) => {
     return (
       <div
-        className={`rounded-full p-8 m-2 cursor-pointer`}
+        className={`rounded-full p-4 m-2 cursor-pointer`}
         style={{
           backgroundColor: color,
           border: '4px solid #ccc',
@@ -123,7 +123,7 @@ export default function Home() {
           window.tatami.api.clearAll()
         }}
       >
-        <svg viewBox="0 0 256 256" width="64" height="64" xmlns="http://www.w3.org/2000/svg"><rect fill="none" height="256" width="256"/><path d="M64,112V40a8,8,0,0,1,8-8H184a8,8,0,0,1,8,8v72" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><line fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16" x1="96" x2="112" y1="64" y2="64"/><path d="M216,112a88,88,0,0,1-176,0Z" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><path d="M93.6,193l-4.3,29.9a8,8,0,0,0,7.9,9.1h61.6a8,8,0,0,0,7.9-9.1L162.4,193" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/></svg>
+        <svg viewBox="0 0 256 256" width="48" height="64" xmlns="http://www.w3.org/2000/svg"><rect fill="none" height="256" width="256"/><path d="M64,112V40a8,8,0,0,1,8-8H184a8,8,0,0,1,8,8v72" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><line fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16" x1="96" x2="112" y1="64" y2="64"/><path d="M216,112a88,88,0,0,1-176,0Z" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><path d="M93.6,193l-4.3,29.9a8,8,0,0,0,7.9,9.1h61.6a8,8,0,0,0,7.9-9.1L162.4,193" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/></svg>
       </div>
     )
   }
