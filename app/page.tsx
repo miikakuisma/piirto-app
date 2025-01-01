@@ -17,6 +17,7 @@ declare module 'react' {
 }
 
 interface TatamiAPI {
+  centerCanvas: () => void;
   zoom: (scale: number, x: number, y: number) => void;
   setBrushSize: (size: number) => void;
   setColor: (color: string) => void;
@@ -38,9 +39,13 @@ declare global {
 
 export default function Home() {
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+  const [selectedColor, setSelectedColor] = React.useState('#000000');
 
   useEffect(() => {
-    setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    setDimensions({
+      width: window.innerWidth * window.devicePixelRatio,
+      height: window.innerHeight * window.devicePixelRatio
+    });
     window.addEventListener("message", launchStuff);
 
     return () => {
@@ -58,14 +63,13 @@ export default function Home() {
   const launchStuff = (e: LaunchMessage) => {
     if (e.data.tatami === 'ready') {
       setTimeout(async () => {
-        // zoom in to full screen (default would be 0.8)
-        window.tatami.api.zoom(1.25, window.innerWidth / 2, window.innerHeight / 2);
+        // window.tatami.api.zoom(1.25, window.innerWidth / 2, window.innerHeight / 2);
         // Load brush package
         await window.tatami.utils.loadBrushPackage({
           url: 'https://cdn.sumo.app/brush_packages/brushes/plain_sharp.lzma',
         })
         // Set brush size and color
-        await window.tatami.api.setBrushSize(10);
+        await window.tatami.api.setBrushSize(10 * window.devicePixelRatio);
         await window.tatami.api.setColor('#000000');
       }, 100);
     }
@@ -102,14 +106,14 @@ export default function Home() {
   const ColorButton = ({ color }: { color: string }) => {
     return (
       <div
-        className={`rounded-full p-4 m-2 cursor-pointer`}
+        className={`rounded-full p-5 m-2 cursor-pointer`}
         style={{
           backgroundColor: color,
-          border: '4px solid #ccc',
+          border: selectedColor === color ? '3px solid #fff' : '3px solid #666',
         }}
         onClick={() => {
-          console.log(color);
           window.tatami.api.setColor(color);
+          setSelectedColor(color);
         }}
       ></div>
     );
@@ -118,12 +122,12 @@ export default function Home() {
   const TrashButton = () => {
     return (
       <div
-        className={`rounded-full m-2 cursor-pointer ml-10`}
+        className={`absolute right-3 bottom-3 rounded-full m-2 cursor-pointer ml-10`}
         onClick={() => {
           window.tatami.api.clearAll()
         }}
       >
-        <svg viewBox="0 0 256 256" width="48" height="64" xmlns="http://www.w3.org/2000/svg"><rect fill="none" height="256" width="256"/><path d="M64,112V40a8,8,0,0,1,8-8H184a8,8,0,0,1,8,8v72" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><line fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16" x1="96" x2="112" y1="64" y2="64"/><path d="M216,112a88,88,0,0,1-176,0Z" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><path d="M93.6,193l-4.3,29.9a8,8,0,0,0,7.9,9.1h61.6a8,8,0,0,0,7.9-9.1L162.4,193" fill="none" stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/></svg>
+        <svg color="#ffffff" viewBox="0 0 256 256" width="36" height="36" xmlns="http://www.w3.org/2000/svg"><rect fill="none" height="256" width="256"/><path d="M64,112V40a8,8,0,0,1,8-8H184a8,8,0,0,1,8,8v72" fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><line fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16" x1="96" x2="112" y1="64" y2="64"/><path d="M216,112a88,88,0,0,1-176,0Z" fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><path d="M93.6,193l-4.3,29.9a8,8,0,0,0,7.9,9.1h61.6a8,8,0,0,0,7.9-9.1L162.4,193" fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/></svg>
       </div>
     )
   }
@@ -139,7 +143,7 @@ export default function Home() {
       paper-color="#ffffff"
     ></tatami-canvas>
 
-    <div className="fixed bottom-0 z-10 flex items-center justify-center w-auto p-10 w-full flex-wrap">
+    <div className="fixed bottom-0 z-10 flex items-center p-2 justify-center w-auto w-full flex-wrap">
       {colorButtons}
       <TrashButton />
     </div>
