@@ -1,101 +1,101 @@
-import Image from "next/image";
+'use client'
+
+import React, { useEffect } from 'react';
+
+declare module 'react' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      'tatami-canvas': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        'paper-width'?: string;
+        'paper-height'?: string;
+        'paper-color'?: string;
+      };
+      setBrushSize: (size: number) => void;
+    }
+  }
+}
+
+interface TatamiAPI {
+  zoom: (scale: number, x: number, y: number) => void;
+  setBrushSize: (size: number) => void;
+  setColor: (color: string) => void;
+}
+
+interface Tatami {
+  api: TatamiAPI;
+  utils: {
+    loadBrushPackage: (options: { url: string }) => void;
+  };
+}
+
+declare global {
+  interface Window {
+    tatami: Tatami;
+  }
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  useEffect(() => {
+    window.addEventListener("message", launchStuff)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    return () => {
+      window.removeEventListener("message", launchStuff)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  interface LaunchMessage extends MessageEvent {
+    data: {
+      tatami: string;
+    };
+  }
+
+  const launchStuff = (e: LaunchMessage) => {
+    console.log(e.data);
+    if (e.data.tatami === 'ready') {
+      setTimeout(async () => {
+        window.tatami.api.zoom(1.25, window.innerWidth / 2, window.innerHeight / 2);
+
+        await window.tatami.utils.loadBrushPackage({
+          url: 'https://cdn.sumo.app/brush_packages/brushes/plain_sharp.lzma',
+        })
+
+        await window.tatami.api.setBrushSize(10);
+
+      }, 100);
+    }
+  };
+
+  const ColorButton = ({ color }: { color: string }) => {
+    return (
+      <div
+        className={`rounded-full p-8 m-2 cursor-pointer`}
+        style={{
+          backgroundColor: color,
+          border: '4px solid #ccc',
+        }}
+        onClick={() => {
+          console.log(color);
+          window.tatami.api.setColor(color);
+        }}
+      ></div>
+    );
+  }
+
+  const colorButtons = ['#dc2626', '#d97706', '#16a34a', '#0284c7', '#7c3aed', '#c026d3', '#db2777', '#475569', '#ffffff', '#000000'].map((color) => {
+    return <ColorButton key={color} color={color} />;
+  });
+
+  return (<>
+    <tatami-canvas
+      paper-width={window.innerWidth.toString()}
+      paper-height={window.innerHeight.toString()}
+      paper-color="#ffffff"
+    ></tatami-canvas>
+
+    <div className="fixed bottom-0 z-10 flex items-center justify-center w-auto p-10 w-full flex-wrap">
+      {colorButtons}
     </div>
-  );
+  </>);
 }
