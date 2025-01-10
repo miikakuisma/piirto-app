@@ -2,6 +2,10 @@
 'use client'
 
 import React, { useEffect } from 'react';
+import { BrushButton } from './components/BrushButton';
+import { ColorButton } from './components/ColorButton';
+import { TrashButton } from './components/TrashButton';
+import { BrushControls } from './components/BrushControls';
 
 declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -22,6 +26,7 @@ interface TatamiAPI {
   setBrushSize: (size: number) => void;
   setColor: (color: string) => void;
   clearAll: () => void;
+  setBrushOpacity: (opacity: number) => void;
 }
 
 interface Tatami {
@@ -40,6 +45,9 @@ declare global {
 export default function Home() {
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
   const [selectedColor, setSelectedColor] = React.useState('#000000');
+  const [selectedBrushSize, setSelectedBrushSize] = React.useState(10);
+  const [brushOpacity, setBrushOpacity] = React.useState(1);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
     setDimensions({
@@ -71,81 +79,71 @@ export default function Home() {
         // Set brush size and color
         await window.tatami.api.setBrushSize(10 * window.devicePixelRatio);
         await window.tatami.api.setColor('#000000');
+        setIsLoading(false);
       }, 100);
     }
   };
 
-  const SmallBrush = () => {
-    return (
-      <div
-        className={`rounded-full p-2.5 m-2 cursor-pointer`}
-        style={{
-          backgroundColor: '#000000',
-        }}
-        onClick={() => {
-          window.tatami.api.setBrushSize(10);
-        }}
-      ></div>
-    );
-  }
+  const brushSizes = [
+    { size: 10, padding: 'p-2.5' },
+    { size: 30, padding: 'p-5' },
+    { size: 50, padding: 'p-7' },
+  ];
 
-  const LargeBrush = () => {
-    return (
-      <div
-        className={`rounded-full p-7 m-2 cursor-pointer`}
-        style={{
-          backgroundColor: '#000000',
-        }}
-        onClick={() => {
-          window.tatami.api.setBrushSize(50);
-        }}
-      ></div>
-    );
-  }
+  const colors = ['#dc2626', '#d97706', '#16a34a', '#0284c7', '#7c3aed', '#c026d3', '#db2777', '#475569', '#ffffff', '#000000'];
 
-  const ColorButton = ({ color }: { color: string }) => {
-    return (
-      <div
-        className={`rounded-full p-5 m-2 cursor-pointer`}
-        style={{
-          backgroundColor: color,
-          border: selectedColor === color ? '3px solid #fff' : '3px solid #666',
-        }}
-        onClick={() => {
-          window.tatami.api.setColor(color);
-          setSelectedColor(color);
-        }}
-      ></div>
-    );
-  }
+  const handleBrushSizeChange = (size: number) => {
+    window.tatami.api.setBrushSize(size * window.devicePixelRatio);
+    setSelectedBrushSize(size);
+  };
 
-  const TrashButton = () => {
-    return (
-      <div
-        className={`absolute right-3 bottom-3 rounded-full m-2 cursor-pointer ml-10`}
-        onClick={() => {
-          window.tatami.api.clearAll()
-        }}
-      >
-        <svg color="#ffffff" viewBox="0 0 256 256" width="36" height="36" xmlns="http://www.w3.org/2000/svg"><rect fill="none" height="256" width="256"/><path d="M64,112V40a8,8,0,0,1,8-8H184a8,8,0,0,1,8,8v72" fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><line fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16" x1="96" x2="112" y1="64" y2="64"/><path d="M216,112a88,88,0,0,1-176,0Z" fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/><path d="M93.6,193l-4.3,29.9a8,8,0,0,0,7.9,9.1h61.6a8,8,0,0,0,7.9-9.1L162.4,193" fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/></svg>
+  const handleColorChange = (color: string) => {
+    window.tatami.api.setColor(color);
+    setSelectedColor(color);
+  };
+
+  const handleOpacityChange = (opacity: number) => {
+    window.tatami.api.setBrushOpacity(opacity);
+    setBrushOpacity(opacity);
+  };
+
+  return (
+    <>
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+            <div className="w-32 h-1 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-full h-full bg-blue-500 animate-[loading_1s_ease-in-out_infinite]"></div>
+            </div>
+            <p className="mt-2 text-sm text-gray-600">Loading Canvas...</p>
+          </div>
+        </div>
+      )}
+      <tatami-canvas
+        paper-width={dimensions.width.toString()}
+        paper-height={dimensions.height.toString()}
+        paper-color="#ffffff"
+      ></tatami-canvas>
+
+      <div className="fixed bottom-0 z-10 flex items-center p-2 justify-center w-full flex-wrap">
+        <div className="flex items-center">
+          <BrushControls 
+            size={selectedBrushSize}
+            opacity={brushOpacity}
+            onSizeChange={handleBrushSizeChange}
+            onOpacityChange={handleOpacityChange}
+          />
+        </div>
+        {colors.map((color) => (
+          <ColorButton
+            key={color}
+            color={color}
+            isSelected={selectedColor === color}
+            onClick={() => handleColorChange(color)}
+          />
+        ))}
+        <TrashButton onClick={() => window.tatami.api.clearAll()} />
       </div>
-    )
-  }
-
-  const colorButtons = ['#dc2626', '#d97706', '#16a34a', '#0284c7', '#7c3aed', '#c026d3', '#db2777', '#475569', '#ffffff', '#000000'].map((color) => {
-    return <ColorButton key={color} color={color} />;
-  });
-
-  return (<>
-    <tatami-canvas
-      paper-width={dimensions.width.toString()}
-      paper-height={dimensions.height.toString()}
-      paper-color="#ffffff"
-    ></tatami-canvas>
-
-    <div className="fixed bottom-0 z-10 flex items-center p-2 justify-center w-auto w-full flex-wrap">
-      {colorButtons}
-      <TrashButton />
-    </div>
-  </>);
+    </>
+  );
 }
