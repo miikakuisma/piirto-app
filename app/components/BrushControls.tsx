@@ -26,10 +26,10 @@ export const BrushControls = ({ size, opacity, onSizeChange, onOpacityChange }: 
   }, []);
 
   return (
-    <div className="relative">
+    <>
       <div
         ref={buttonRef}
-        className="rounded-full p-2 mr-3 cursor-pointer flex items-center justify-center hover:bg-gray-700 transition-colors"
+        className="absolute left-3 bottom-3 z-20 rounded-full p-2 mr-3 cursor-pointer flex items-center justify-center hover:bg-gray-700 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
       >
         <PaintBrushIcon className="w-6 h-6 text-white" />
@@ -38,8 +38,7 @@ export const BrushControls = ({ size, opacity, onSizeChange, onOpacityChange }: 
       {isOpen && (
         <div
           ref={popupRef}
-          className="absolute bottom-full mb-2 bg-white rounded-lg p-4 shadow-lg"
-          style={{ left: '50%', transform: 'translateX(-50%)' }}
+          className="absolute bottom-16 left-3 mb-2 bg-white rounded-lg p-4 shadow-lg"
         >
           <div className="flex flex-col items-center gap-4">
             <div className="flex flex-col items-center gap-1">
@@ -70,6 +69,6 @@ export const BrushControls = ({ size, opacity, onSizeChange, onOpacityChange }: 
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }; 

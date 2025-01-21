@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-import React, { useEffect } from 'react';
-import { BrushButton } from './components/BrushButton';
-import { ColorButton } from './components/ColorButton';
-import { TrashButton } from './components/TrashButton';
-import { BrushControls } from './components/BrushControls';
+import React, { useEffect, useState } from 'react';
+import { CanvasControls } from './components/CanvasControls';
 
 declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -19,8 +16,9 @@ declare module 'react' {
     }
   }
 }
-
+  
 interface TatamiAPI {
+  saveCurrentImage(): unknown;
   centerCanvas: () => void;
   zoom: (scale: number, x: number, y: number) => void;
   setBrushSize: (size: number) => void;
@@ -32,6 +30,7 @@ interface TatamiAPI {
 interface Tatami {
   api: TatamiAPI;
   utils: {
+    loadAsset(options: { src: string }): Promise<unknown>;
     loadBrushPackage: (options: { url: string }) => void;
   };
 }
@@ -47,7 +46,12 @@ export default function Home() {
   const [selectedColor, setSelectedColor] = React.useState('#000000');
   const [selectedBrushSize, setSelectedBrushSize] = React.useState(10);
   const [brushOpacity, setBrushOpacity] = React.useState(1);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [magicResult, setMagicResult] = useState<{
+    originalDescription?: string;
+    enhancedPrompt?: string;
+    generatedImage?: string;
+  } | null>(null);
 
   useEffect(() => {
     setDimensions({
@@ -84,14 +88,6 @@ export default function Home() {
     }
   };
 
-  const brushSizes = [
-    { size: 10, padding: 'p-2.5' },
-    { size: 30, padding: 'p-5' },
-    { size: 50, padding: 'p-7' },
-  ];
-
-  const colors = ['#dc2626', '#d97706', '#16a34a', '#0284c7', '#7c3aed', '#c026d3', '#db2777', '#475569', '#ffffff', '#000000'];
-
   const handleBrushSizeChange = (size: number) => {
     window.tatami.api.setBrushSize(size * window.devicePixelRatio);
     setSelectedBrushSize(size);
@@ -107,8 +103,60 @@ export default function Home() {
     setBrushOpacity(opacity);
   };
 
+  const handleMagicClick = async () => {
+    console.log('handleMagicClick');
+    if (!window.tatami?.api) return;
+    
+    setIsLoading(true);
+
+    try {
+      const imageBlob = await window.tatami.api.saveCurrentImage() as Blob;
+      const image = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(imageBlob);
+      });
+
+      const response = await fetch('/api/magic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ image }),
+      });
+
+      if (!response.ok) throw new Error('Failed to process image');
+
+      const result = await response.json();
+      
+      // Proxy the generated image
+      const proxyResponse = await fetch('/api/proxy-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ imageUrl: result.generatedImage }),
+      });
+
+      if (!proxyResponse.ok) throw new Error('Failed to proxy image');
+      
+      const { dataUrl } = await proxyResponse.json();
+      
+      window.tatami.utils.loadAsset({
+        src: dataUrl,
+      });
+
+      setMagicResult(result);
+
+    } catch (error) {
+      console.error('Error processing magic:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <>
+    <main className="relative w-screen h-screen">
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded-lg shadow-lg text-center">
@@ -120,30 +168,22 @@ export default function Home() {
         </div>
       )}
       <tatami-canvas
-        paper-width={dimensions.width.toString()}
-        paper-height={dimensions.height.toString()}
+        paper-width={Math.min(dimensions.width, dimensions.height).toString()}
+        paper-height={Math.min(dimensions.width, dimensions.height).toString()}
         paper-color="#ffffff"
       ></tatami-canvas>
 
-      <div className="fixed bottom-0 z-10 flex items-center p-2 justify-center w-full flex-wrap">
-        <div className="flex items-center">
-          <BrushControls 
-            size={selectedBrushSize}
-            opacity={brushOpacity}
-            onSizeChange={handleBrushSizeChange}
-            onOpacityChange={handleOpacityChange}
-          />
-        </div>
-        {colors.map((color) => (
-          <ColorButton
-            key={color}
-            color={color}
-            isSelected={selectedColor === color}
-            onClick={() => handleColorChange(color)}
-          />
-        ))}
-        <TrashButton onClick={() => window.tatami.api.clearAll()} />
-      </div>
-    </>
+      <CanvasControls 
+        selectedColor={selectedColor}
+        selectedBrushSize={selectedBrushSize}
+        brushOpacity={brushOpacity}
+        isLoading={isLoading}
+        onBrushSizeChange={handleBrushSizeChange}
+        onOpacityChange={handleOpacityChange}
+        onColorChange={handleColorChange}
+        onClear={() => window.tatami.api.clearAll()}
+        onMagicClick={handleMagicClick}
+      />
+    </main>
   );
 }

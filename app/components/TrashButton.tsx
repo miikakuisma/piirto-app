@@ -1,7 +1,7 @@
 export const TrashButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <div
-      className={`absolute right-3 bottom-3 rounded-full m-2 cursor-pointer ml-10`}
+      className={`absolute right-3 bottom-3 z-20 rounded-full m-2 cursor-pointer ml-10`}
       onClick={onClick}
     >
       <svg color="#ffffff" viewBox="0 0 256 256" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
