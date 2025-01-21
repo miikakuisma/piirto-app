@@ -32,6 +32,8 @@ interface Tatami {
   utils: {
     loadAsset(options: { src: string }): Promise<unknown>;
     loadBrushPackage: (options: { url: string }) => void;
+    hslToRgb: (h: number, s: number, l: number) => [number, number, number];
+    rgbToHex: (rgb: { r: number; g: number; b: number }) => string;
   };
 }
 

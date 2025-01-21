@@ -1,8 +1,8 @@
 import { BrushControls } from './BrushControls';
-import { ColorButton } from './ColorButton';
 import { TrashButton } from './TrashButton';
 import { MagicButton } from './MagicButton';
 import { ShareButton } from './ShareButton';
+import { ColorBar } from './ColorBar';
 
 interface CanvasControlsProps {
   selectedColor: string;
@@ -21,7 +21,6 @@ interface CanvasControlsProps {
 }
 
 export const CanvasControls = ({
-  selectedColor,
   selectedBrushSize,
   brushOpacity,
   isLoading,
@@ -35,7 +34,6 @@ export const CanvasControls = ({
   onMagicClick,
   onShare,
 }: CanvasControlsProps) => {
-  const colors = ['#dc2626', '#d97706', '#16a34a', '#0284c7', '#7c3aed', '#c026d3', '#db2777', '#475569', '#ffffff', '#000000'];
 
   return (
     <>
@@ -46,16 +44,7 @@ export const CanvasControls = ({
         onOpacityChange={onOpacityChange}
       />
 
-      <div className="fixed bottom-0 z-10 flex items-center p-2 justify-center w-full flex-wrap">
-        {colors.map((color) => (
-          <ColorButton
-            key={color}
-            color={color}
-            isSelected={selectedColor === color}
-            onClick={() => onColorChange(color)}
-          />
-        ))}
-      </div>
+      <ColorBar onColorChange={onColorChange} />
 
       <TrashButton onClick={onClear} />
       <ShareButton onShare={onShare} isDirty={isDirty} />
