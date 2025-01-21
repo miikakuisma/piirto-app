@@ -73,10 +73,7 @@ export default function Home() {
 
   useEffect(() => {
     if (isCanvasDirty && !isMagicAvailable && !hasMagicBeenUsed) {
-      // Random delay between 1 and 3 minutes
-      const delay = Math.floor(Math.random() * (180000 - 60000) + 60000);
-      const timer = setTimeout(() => setIsMagicAvailable(true), delay);
-      return () => clearTimeout(timer);
+      setIsMagicAvailable(true)
     }
   }, [isCanvasDirty, isMagicAvailable, hasMagicBeenUsed]);
 
@@ -143,12 +140,19 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ image }),
+        signal: AbortSignal.timeout(120000)
       });
 
-      if (!response.ok) throw new Error('Failed to process image');
+      if (!response.ok) {
+        throw new Error(`Failed to process image: ${response.status}`);
+      }
 
       const result = await response.json();
       
+      if (!result.generatedImage) {
+        throw new Error('No generated image in response');
+      }
+
       // Proxy the generated image
       const proxyResponse = await fetch('/api/proxy-image', {
         method: 'POST',
@@ -158,7 +162,9 @@ export default function Home() {
         body: JSON.stringify({ imageUrl: result.generatedImage }),
       });
 
-      if (!proxyResponse.ok) throw new Error('Failed to proxy image');
+      if (!proxyResponse.ok) {
+        throw new Error('Failed to proxy image');
+      }
       
       const { dataUrl } = await proxyResponse.json();
       
@@ -170,8 +176,10 @@ export default function Home() {
 
     } catch (error) {
       console.error('Error processing magic:', error);
+      alert('Failed to generate image. Please try again.');
     } finally {
       setIsLoading(false);
+      setHasMagicBeenUsed(false);
     }
   };
 

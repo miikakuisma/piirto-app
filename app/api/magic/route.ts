@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         },
         {
           role: "user",
-          content: `Create a DALL-E prompt based on this description of a child's drawing: "${description}". Maintain the core elements and composition but enhance it into a professional, magical version. Keep the prompt under 200 characters.`
+          content: `Create a DALL-E prompt based on this description of a child's drawing: "${description}". Maintain the core elements and composition but enhance it into a professional, magical version that still looks like a funny drawing. Keep the prompt under 200 characters.`
         }
       ],
     });

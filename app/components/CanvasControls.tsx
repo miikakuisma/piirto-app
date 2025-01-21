@@ -37,7 +37,7 @@ export const CanvasControls = ({
 
   return (
     <>
-      <div className="fixed h-24 bottom-0 w-full px-4 p-4 flex justify-center bg-slate-900 border-t border-slate-600">
+      <div className="fixed h-24 bottom-0 w-full px-4 p-4 flex justify-center items-center bg-slate-900 border-t border-slate-600">
         <BrushControls 
           size={selectedBrushSize}
           opacity={brushOpacity}
@@ -45,9 +45,10 @@ export const CanvasControls = ({
           onOpacityChange={onOpacityChange}
         />
         <ColorBar onColorChange={onColorChange} />
-        <TrashButton onClick={onClear} />
         <ShareButton onShare={onShare} isDirty={isDirty} />
       </div>
+
+      <TrashButton onClick={onClear} />
 
       {isDirty && !hasMagicBeenUsed && isMagicAvailable && <MagicButton onClick={onMagicClick} isLoading={isLoading} />}
     </>

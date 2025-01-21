@@ -90,10 +90,10 @@ export const ShareButton = ({ onShare, isDirty }: ShareButtonProps) => {
     <>
       <div
         ref={buttonRef}
-        className="relative rounded-full p-2 ml-3 cursor-pointer flex items-center justify-center hover:bg-gray-700 transition-colors"
+        className="relative w-12 h-12 min-w-12 min-h-12 rounded-full p-2 ml-3 cursor-pointer flex items-center justify-center hover:bg-gray-700 transition-colors"
         onClick={handleClick}
       >
-        <ShareIcon className="w-12 h-6 text-white" />
+        <ShareIcon className="w-8 h-8 min-w-8 min-h-8 p-1 text-white" />
       </div>
 
       {isOpen && (

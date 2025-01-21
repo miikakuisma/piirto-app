@@ -10,7 +10,7 @@ export const MagicButton = ({ onClick, isLoading = false }: MagicButtonProps) =>
     <button
       onClick={onClick}
       disabled={isLoading}
-      className="absolute left-1/2 transform -translate-x-1/2 top-5 z-10 rounded-full bg-purple-600 hover:bg-purple-700 p-2 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="fixed right-6 bottom-6 z-20 rounded-full bg-purple-600 hover:bg-purple-700 p-2 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       aria-label="Transform drawing with magic"
     >
       <SparklesIcon className="w-8 h-8 text-white animate-pulse" />
