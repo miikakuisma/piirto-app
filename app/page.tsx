@@ -73,8 +73,8 @@ export default function Home() {
 
   useEffect(() => {
     if (isCanvasDirty && !isMagicAvailable && !hasMagicBeenUsed) {
-      // Random delay between 1 and 5 minutes
-      const delay = Math.floor(Math.random() * (300000 - 60000) + 60000);
+      // Random delay between 1 and 3 minutes
+      const delay = Math.floor(Math.random() * (180000 - 60000) + 60000);
       const timer = setTimeout(() => setIsMagicAvailable(true), delay);
       return () => clearTimeout(timer);
     }
@@ -103,7 +103,7 @@ export default function Home() {
       }, 100);
     }
     if (e.data.command === 'layers_changed') {
-      console.log('layers_changed, setting isCanvasDirty to true')
+      // console.log('layers_changed, setting isCanvasDirty to true')
       setIsCanvasDirty(true);
     }
   };
