@@ -52,6 +52,9 @@ export default function Home() {
     enhancedPrompt?: string;
     generatedImage?: string;
   } | null>(null);
+  const [isCanvasDirty, setIsCanvasDirty] = useState(false);
+  const [hasMagicBeenUsed, setHasMagicBeenUsed] = useState(false);
+  const [isMagicAvailable, setIsMagicAvailable] = useState(false);
 
   useEffect(() => {
     setDimensions({
@@ -66,13 +69,24 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (isCanvasDirty && !isMagicAvailable && !hasMagicBeenUsed) {
+      // Random delay between 1 and 5 minutes
+      const delay = Math.floor(Math.random() * (300000 - 60000) + 60000);
+      const timer = setTimeout(() => setIsMagicAvailable(true), delay);
+      return () => clearTimeout(timer);
+    }
+  }, [isCanvasDirty, isMagicAvailable, hasMagicBeenUsed]);
+
   interface LaunchMessage extends MessageEvent {
     data: {
+      [x: string]: string;
       tatami: string;
     };
   }
 
   const launchStuff = (e: LaunchMessage) => {
+    // console.log(e.data)
     if (e.data.tatami === 'ready') {
       setTimeout(async () => {
         // window.tatami.api.zoom(1.25, window.innerWidth / 2, window.innerHeight / 2);
@@ -85,6 +99,10 @@ export default function Home() {
         await window.tatami.api.setColor('#000000');
         setIsLoading(false);
       }, 100);
+    }
+    if (e.data.command === 'layers_changed') {
+      console.log('layers_changed, setting isCanvasDirty to true')
+      setIsCanvasDirty(true);
     }
   };
 
@@ -104,10 +122,10 @@ export default function Home() {
   };
 
   const handleMagicClick = async () => {
-    console.log('handleMagicClick');
     if (!window.tatami?.api) return;
     
     setIsLoading(true);
+    setHasMagicBeenUsed(true);
 
     try {
       const imageBlob = await window.tatami.api.saveCurrentImage() as Blob;
@@ -155,6 +173,33 @@ export default function Home() {
     }
   };
 
+  const handleShare = async () => {
+    const imageBlob = await window.tatami.api.saveCurrentImage() as Blob;
+    const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.jpg`;
+    const file = new File([imageBlob], uniqueFileName, { type: 'image/jpeg' });
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('filename', uniqueFileName);
+
+    const response = await fetch('/api/share', {
+      method: 'POST',
+      body: formData,  // Remove Content-Type header - browser will set it automatically with boundary
+    });
+
+    if (!response.ok) throw new Error('Failed to share image');
+    
+    const data = await response.json();
+    setIsCanvasDirty(false); // Reset dirty flag after successful share
+    return data.url;
+  };
+
+  const handleClear = () => {
+    window.tatami.api.clearAll();
+    setHasMagicBeenUsed(false);
+    setIsMagicAvailable(false);  // Reset magic availability
+  };
+
   return (
     <main className="relative w-screen h-screen">
       {isLoading && (
@@ -163,13 +208,12 @@ export default function Home() {
             <div className="w-32 h-1 bg-gray-200 rounded-full overflow-hidden">
               <div className="w-full h-full bg-blue-500 animate-[loading_1s_ease-in-out_infinite]"></div>
             </div>
-            <p className="mt-2 text-sm text-gray-600">Loading Canvas...</p>
           </div>
         </div>
       )}
       <tatami-canvas
-        paper-width={Math.min(dimensions.width, dimensions.height).toString()}
-        paper-height={Math.min(dimensions.width, dimensions.height).toString()}
+        paper-width='1024'
+        paper-height='1024'
         paper-color="#ffffff"
       ></tatami-canvas>
 
@@ -181,8 +225,12 @@ export default function Home() {
         onBrushSizeChange={handleBrushSizeChange}
         onOpacityChange={handleOpacityChange}
         onColorChange={handleColorChange}
-        onClear={() => window.tatami.api.clearAll()}
+        onClear={handleClear}
         onMagicClick={handleMagicClick}
+        onShare={handleShare}
+        isDirty={isCanvasDirty}
+        hasMagicBeenUsed={hasMagicBeenUsed}
+        isMagicAvailable={isMagicAvailable}
       />
     </main>
   );
