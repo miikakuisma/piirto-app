@@ -75,7 +75,7 @@ export const ShareButton = ({ onShare, isDirty }: ShareButtonProps) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'drawing.jpg';
+        a.download = `drawing-${Date.now()}.jpg`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
