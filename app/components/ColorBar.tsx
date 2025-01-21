@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 
 interface ColorBarProps {
   onColorChange: (color: string) => void;
@@ -8,6 +8,10 @@ export const ColorBar = ({ onColorChange }: ColorBarProps) => {
   const barRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [currentHue, setCurrentHue] = useState(0);
+
+  useEffect(() => {
+    setCurrentHue(58);
+  }, []);
 
   const handleColorChange = useCallback((clientX: number) => {
     if (!barRef.current) return;
@@ -22,6 +26,7 @@ export const ColorBar = ({ onColorChange }: ColorBarProps) => {
     const rgbArray = window.tatami.utils.hslToRgb((100/360) * hue / 100, 1, 0.5);
     const color = '#' + window.tatami.utils.rgbToHex({ r: rgbArray[0], g: rgbArray[1], b: rgbArray[2] });
     
+    console.log(color);
     onColorChange(color);
   }, [onColorChange]);
 

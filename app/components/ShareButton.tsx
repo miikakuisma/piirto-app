@@ -90,7 +90,7 @@ export const ShareButton = ({ onShare, isDirty }: ShareButtonProps) => {
     <>
       <div
         ref={buttonRef}
-        className="absolute right-16 bottom-3 z-20 rounded-full p-2 cursor-pointer flex items-center justify-center hover:bg-gray-700 transition-colors"
+        className="absolute right-16 bottom-4 z-20 rounded-full p-2 cursor-pointer flex items-center justify-center hover:bg-gray-700 transition-colors"
         onClick={handleClick}
       >
         <ShareIcon className="w-6 h-6 text-white" />

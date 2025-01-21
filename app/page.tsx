@@ -98,7 +98,7 @@ export default function Home() {
         })
         // Set brush size and color
         await window.tatami.api.setBrushSize(10 * window.devicePixelRatio);
-        await window.tatami.api.setColor('#000000');
+        await window.tatami.api.setColor('#0095ff');
         setIsLoading(false);
       }, 100);
     }
