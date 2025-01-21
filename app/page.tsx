@@ -213,11 +213,13 @@ export default function Home() {
           </div>
         </div>
       )}
-      <tatami-canvas
-        paper-width='1024'
-        paper-height='1024'
-        paper-color="#ffffff"
-      ></tatami-canvas>
+      <div className="fixed top-0 left-0 right-0 bottom-24 z-0">
+        <tatami-canvas
+          paper-width='1024'
+          paper-height='1024'
+          paper-color="#ffffff"
+        ></tatami-canvas>
+      </div>
 
       <CanvasControls 
         selectedColor={selectedColor}

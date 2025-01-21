@@ -1,10 +1,10 @@
 export const TrashButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <div
-      className={`absolute right-3 bottom-3 z-20 rounded-full m-2 cursor-pointer ml-10`}
+      className={`absolute right-3 bottom-3 z-20 p-2 rounded-full m-2 cursor-pointer ml-10 flex items-center justify-center`}
       onClick={onClick}
     >
-      <svg color="#ffffff" viewBox="0 0 256 256" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+      <svg color="#ffffff" viewBox="0 0 256 256" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
         <rect fill="none" height="256" width="256"/>
         <path d="M64,112V40a8,8,0,0,1,8-8H184a8,8,0,0,1,8,8v72" fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
         <line fill="none" stroke="currentcolor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16" x1="96" x2="112" y1="64" y2="64"/>
