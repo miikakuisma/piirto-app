@@ -5,26 +5,24 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+export const maxDuration = 300; // Tell Vercel to allow 5 minute timeout
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { image } = await request.json();
 
-    // First, analyze the image
-    const analysis = await openai.chat.completions.create({
+    // First, analyze the image with shorter timeout
+    const analysisPromise = openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "user",
           content: [
-            { 
-              type: "text", 
-              text: "Analyze this drawing and describe what it appears to be in detail. Focus on the main subject, style, and key features. Be concise." 
-            },
+            { type: "text", text: "Analyze this drawing and describe what it appears to be in detail. Focus on the main subject, style, and key features. Be concise." },
             {
               type: "image_url",
-              image_url: {
-                url: image
-              },
+              image_url: { url: image }
             },
           ],
         },
@@ -32,7 +30,14 @@ export async function POST(request: Request) {
       max_tokens: 300,
     });
 
-    const description = analysis.choices[0].message.content;
+    // Set timeout for first API call
+    const description = await Promise.race([
+      analysisPromise,
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Analysis timeout')), 60000)
+      )
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ]).then((result: any) => result.choices[0].message.content);
 
     // Generate an enhanced prompt
     const promptResponse = await openai.chat.completions.create({
@@ -67,6 +72,14 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Error in magic route:', error);
+    // Return specific error for timeouts
+    if (error instanceof Error && (error.message === 'Analysis timeout' || 'code' in error && error.code === 'ETIMEDOUT')) {
+      return NextResponse.json(
+        { error: 'Request took too long, please try again' },
+        { status: 504 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to process image' },
       { status: 500 }
