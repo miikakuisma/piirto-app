@@ -57,6 +57,7 @@ export default function Home() {
   const [isCanvasDirty, setIsCanvasDirty] = useState(false);
   const [hasMagicBeenUsed, setHasMagicBeenUsed] = useState(false);
   const [isMagicAvailable, setIsMagicAvailable] = useState(false);
+  const [hasDrawnWithColor, setHasDrawnWithColor] = useState(false);
 
   useEffect(() => {
     setDimensions({
@@ -97,6 +98,8 @@ export default function Home() {
       // console.log('layers_changed, setting isCanvasDirty to true')
       setIsCanvasDirty(true);
       setIsMagicAvailable(true);
+      setHasDrawnWithColor(true);
+      setTimeout(() => setHasDrawnWithColor(false), 100);
     }
   };
 
@@ -263,6 +266,7 @@ export default function Home() {
         isDirty={isCanvasDirty}
         hasMagicBeenUsed={hasMagicBeenUsed}
         isMagicAvailable={isMagicAvailable}
+        hasDrawnWithColor={hasDrawnWithColor}
       />
     </main>
   );

@@ -12,6 +12,7 @@ interface CanvasControlsProps {
   isDirty: boolean;
   hasMagicBeenUsed: boolean;
   isMagicAvailable: boolean;
+  hasDrawnWithColor: boolean;
   onBrushSizeChange: (size: number) => void;
   onOpacityChange: (opacity: number) => void;
   onColorChange: (color: string) => void;
@@ -27,6 +28,7 @@ export const CanvasControls = ({
   isDirty,
   hasMagicBeenUsed,
   isMagicAvailable,
+  hasDrawnWithColor,
   onBrushSizeChange,
   onOpacityChange,
   onColorChange,
@@ -44,7 +46,10 @@ export const CanvasControls = ({
           onSizeChange={onBrushSizeChange}
           onOpacityChange={onOpacityChange}
         />
-        <ColorBar onColorChange={onColorChange} />
+        <ColorBar 
+          onColorChange={onColorChange} 
+          hasDrawnWithColor={hasDrawnWithColor}
+        />
         <ShareButton onShare={onShare} isDirty={isDirty} />
       </div>
 
