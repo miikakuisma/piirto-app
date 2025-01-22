@@ -71,12 +71,6 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (isCanvasDirty && !isMagicAvailable && !hasMagicBeenUsed) {
-      setIsMagicAvailable(true)
-    }
-  }, [isCanvasDirty, isMagicAvailable, hasMagicBeenUsed]);
-
   interface LaunchMessage extends MessageEvent {
     data: {
       [x: string]: string;
@@ -102,6 +96,7 @@ export default function Home() {
     if (e.data.command === 'layers_changed') {
       // console.log('layers_changed, setting isCanvasDirty to true')
       setIsCanvasDirty(true);
+      setIsMagicAvailable(true);
     }
   };
 
@@ -228,8 +223,11 @@ export default function Home() {
 
   const handleClear = () => {
     window.tatami.api.clearAll();
-    setHasMagicBeenUsed(false);
-    setIsMagicAvailable(false);  // Reset magic availability
+    setTimeout(() => {
+      setHasMagicBeenUsed(false);
+      setIsMagicAvailable(false);
+      setIsCanvasDirty(false);
+    }, 500);
   };
 
   return (
