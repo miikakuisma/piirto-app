@@ -18,6 +18,8 @@ declare module 'react' {
 }
   
 interface TatamiAPI {
+  undo(): unknown;
+  redo(): unknown;
   saveCurrentImage(): unknown;
   centerCanvas: () => void;
   zoom: (scale: number, x: number, y: number) => void;

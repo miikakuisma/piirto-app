@@ -3,6 +3,7 @@ import { TrashButton } from './TrashButton';
 import { MagicButton } from './MagicButton';
 import { ShareButton } from './ShareButton';
 import { ColorBar } from './ColorBar';
+import { UndoRedoButtons } from './UndoRedoButtons';
 
 interface CanvasControlsProps {
   selectedColor: string;
@@ -39,6 +40,8 @@ export const CanvasControls = ({
 
   return (
     <>
+      <UndoRedoButtons />
+      
       <div className="fixed h-24 bottom-0 w-full px-4 p-4 flex justify-start md:justify-center items-center bg-slate-900 border-t border-slate-600">
         <BrushControls 
           size={selectedBrushSize}
