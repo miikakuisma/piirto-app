@@ -18,7 +18,7 @@ export async function POST(request: Request) {
           content: [
             { 
               type: "text", 
-              text: "Analyze this drawing and describe what it appears to be. Focus on the main subject, style, and key features. Be concise." 
+              text: "Analyze this drawing and describe what it appears to be in detail. Focus on the main subject, style, and key features. Be concise." 
             },
             {
               type: "image_url",
@@ -40,11 +40,11 @@ export async function POST(request: Request) {
       messages: [
         {
           role: "system",
-          content: "You are an expert at creating image generation prompts. Convert simple descriptions into detailed, artistic prompts that maintain the essence of the original while adding magical and professional artistic elements."
+          content: "You are an expert at creating image generation prompts. Convert simple descriptions into detailed, artistic prompts that maintain the essence of the original."
         },
         {
           role: "user",
-          content: `Create a DALL-E prompt based on this description of a child's drawing: "${description}". Maintain the core elements and composition but enhance it into a magical version that looks like funny remix of the original. Keep the prompt under 200 characters.`
+          content: `Create a DALL-E prompt based on this description of a child's drawing: "${description}". Maintain the original elements and composition. Keep the prompt under 200 characters.`
         }
       ],
     });

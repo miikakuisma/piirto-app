@@ -126,60 +126,82 @@ export default function Home() {
     setIsLoading(true);
     setHasMagicBeenUsed(true);
 
-    try {
-      const imageBlob = await window.tatami.api.saveCurrentImage() as Blob;
-      const image = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(imageBlob);
-      });
+    const maxRetries = 2;
+    let currentTry = 0;
 
-      const response = await fetch('/api/magic', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ image }),
-        signal: AbortSignal.timeout(120000)
-      });
+    while (currentTry <= maxRetries) {
+      try {
+        const imageBlob = await window.tatami.api.saveCurrentImage() as Blob;
+        const image = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(imageBlob);
+        });
 
-      if (!response.ok) {
-        throw new Error(`Failed to process image: ${response.status}`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minutes timeout
+
+        const response = await fetch('/api/magic', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ image }),
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          if (response.status === 504) {
+            if (currentTry < maxRetries) {
+              currentTry++;
+              continue; // Try again
+            }
+          }
+          throw new Error(`Failed to process image: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (!result.generatedImage) {
+          throw new Error('No generated image in response');
+        }
+
+        // Proxy the generated image
+        const proxyResponse = await fetch('/api/proxy-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ imageUrl: result.generatedImage }),
+        });
+
+        if (!proxyResponse.ok) {
+          throw new Error('Failed to proxy image');
+        }
+        
+        const { dataUrl } = await proxyResponse.json();
+        
+        await window.tatami.utils.loadAsset({
+          src: dataUrl,
+        });
+
+        setMagicResult(result);
+        break; // Success, exit loop
+
+      } catch (error) {
+        console.error('Error processing magic:', error);
+        if (currentTry === maxRetries) {
+          alert('The magic is taking longer than expected. Please try again in a moment.');
+        }
+        currentTry++;
       }
+    }
 
-      const result = await response.json();
-      
-      if (!result.generatedImage) {
-        throw new Error('No generated image in response');
-      }
-
-      // Proxy the generated image
-      const proxyResponse = await fetch('/api/proxy-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ imageUrl: result.generatedImage }),
-      });
-
-      if (!proxyResponse.ok) {
-        throw new Error('Failed to proxy image');
-      }
-      
-      const { dataUrl } = await proxyResponse.json();
-      
-      window.tatami.utils.loadAsset({
-        src: dataUrl,
-      });
-
-      setMagicResult(result);
-
-    } catch (error) {
-      console.error('Error processing magic:', error);
-      alert('Failed to generate image. Please try again.');
-    } finally {
-      setIsLoading(false);
-      setHasMagicBeenUsed(false);
+    setIsLoading(false);
+    if (currentTry > maxRetries) {
+      setHasMagicBeenUsed(false); // Allow retry only on complete failure
     }
   };
 
