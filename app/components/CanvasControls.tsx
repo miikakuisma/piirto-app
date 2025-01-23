@@ -42,7 +42,7 @@ export const CanvasControls = ({
     <>
       <UndoRedoButtons />
       
-      <div className="fixed h-24 bottom-0 w-full px-4 p-4 flex justify-start md:justify-center items-center bg-slate-800 border-t border-slate-600">
+      <div className="fixed h-24 bottom-0 w-full px-4 p-4 flex justify-start md:justify-center items-center bg-slate-900 border-t border-slate-600">
         <BrushControls 
           size={selectedBrushSize}
           opacity={brushOpacity}
