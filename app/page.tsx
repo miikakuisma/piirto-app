@@ -32,6 +32,7 @@ interface TatamiAPI {
 interface Tatami {
   api: TatamiAPI;
   utils: {
+    limitImageSize(arg0: { url: string; maxSize: number; }): unknown;
     loadAsset(options: { src: string }): Promise<unknown>;
     loadBrushPackage: (options: { url: string }) => void;
     hslToRgb: (h: number, s: number, l: number) => [number, number, number];
@@ -50,7 +51,7 @@ export default function Home() {
   const [selectedColor, setSelectedColor] = React.useState('#000000');
   const [selectedBrushSize, setSelectedBrushSize] = React.useState(10);
   const [brushOpacity, setBrushOpacity] = React.useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [magicResult, setMagicResult] = useState<{
     originalDescription?: string;
     enhancedPrompt?: string;
@@ -132,11 +133,16 @@ export default function Home() {
     while (currentTry <= maxRetries) {
       try {
         const imageBlob = await window.tatami.api.saveCurrentImage() as Blob;
-        const image = await new Promise((resolve) => {
+        const imageBase64 = await new Promise((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result as string);
           reader.readAsDataURL(imageBlob);
         });
+
+        const resizedImage = await window.tatami.utils.limitImageSize({
+          url: imageBase64 as string,
+          maxSize: 512
+        })
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minutes timeout
@@ -146,7 +152,7 @@ export default function Home() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ image }),
+          body: JSON.stringify({ image: (resizedImage as { base64: string }).base64 }),
           signal: controller.signal
         });
 
