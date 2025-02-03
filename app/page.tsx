@@ -141,7 +141,7 @@ export default function Home() {
 
         const resizedImage = await window.tatami.utils.limitImageSize({
           url: imageBase64 as string,
-          maxSize: 512
+          maxSize: 1024
         })
 
         const controller = new AbortController();
@@ -254,8 +254,8 @@ export default function Home() {
       )}
       <div className="fixed top-0 left-0 right-0 bottom-24 z-0">
         <tatami-canvas
-          paper-width='1024'
-          paper-height='1024'
+          paper-width='1920'
+          paper-height='1080'
           paper-color="#ffffff"
         ></tatami-canvas>
       </div>

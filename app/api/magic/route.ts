@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     const imageResponse = await openai.images.generate({
       model: "dall-e-3",
       prompt: enhancedPrompt || '', // Add fallback empty string to satisfy type check
-      size: "1024x1024",
+      size: "1792x1024", // Changed to landscape 16:9 ratio
       quality: "standard", 
       n: 1,
     });
