@@ -1,7 +1,9 @@
 export const TrashButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <div
-      className={`fixed right-4 top-4 z-20 opacity-30 hover:opacity-100 p-2 rounded-full m-2 cursor-pointer flex items-center justify-center`}
+      role="button"
+      aria-label="Delete item"
+      className="fixed right-4 top-4 z-20 opacity-30 hover:opacity-100 p-2 rounded-full m-2 cursor-pointer flex items-center justify-center"
       onClick={onClick}
     >
       <svg color="#ffffff" viewBox="0 0 256 256" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
