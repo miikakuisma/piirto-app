@@ -22,12 +22,12 @@ export default function LandingPage() {
         <footer className="fixed bottom-0 w-full p-4 text-center text-sm text-gray-400">
           <nav className="flex flex-wrap justify-center gap-4">
             <Link 
-              href="/about"
+              href="https://tatami.dev"
               className="hover:text-white transition-colors"
               tabIndex={0}
               aria-label="About Us"
             >
-              About Us
+              Made by Tatami Tuotanto
             </Link>
             <Link 
               href="/terms"
