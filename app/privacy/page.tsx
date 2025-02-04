@@ -3,6 +3,7 @@
 import * as Accordion from '@radix-ui/react-accordion';
 import ChevronIcon from '../components/ChevronIcon';
 import PolicyLayout from '../components/PolicyLayout';
+import * as Separator from '@radix-ui/react-separator';
 
 export default function PrivacyPage() {
   return (
