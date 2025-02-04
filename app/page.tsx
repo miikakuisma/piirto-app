@@ -9,7 +9,7 @@ export default function LandingPage() {
           Your Drawing<br />is the Prompt
         </h1>
         <p className="text-xl mb-8 text-gray-300">
-          Transform sketches with the power of AI
+          Transform sketches into AI artwork
         </p>
         <Link 
           href="/app" 
@@ -17,7 +17,7 @@ export default function LandingPage() {
           tabIndex={0}
           aria-label="Start Drawing"
         >
-          Start Drawing
+          Get Started
         </Link>
         <footer className="fixed bottom-0 w-full p-4 text-center text-sm text-gray-400">
           <nav className="flex flex-wrap justify-center gap-4">

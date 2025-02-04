@@ -10,6 +10,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-accordion": "^1.2.2",
+    "@radix-ui/react-form": "^0.1.1",
+    "@radix-ui/react-radio-group": "^1.2.2",
+    "@radix-ui/react-scroll-area": "^1.2.2",
+    "@radix-ui/react-separator": "^1.1.1",
     "@types/lodash": "^4.17.14",
     "@types/nodemailer": "^6.4.17",
     "@vercel/blob": "^0.27.1",
