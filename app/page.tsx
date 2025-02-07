@@ -12,12 +12,12 @@ export default function LandingPage() {
           Transform sketches into AI artwork
         </p>
         <Link 
-          href="/app" 
+          href="https://apps.apple.com/fi/app/piirto/id6741417307" 
           className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-200 hover:scale-105"
           tabIndex={0}
           aria-label="Start Drawing"
         >
-          Get Started
+          Get it from the App Store
         </Link>
         <footer className="fixed bottom-0 w-full p-4 text-center text-sm text-gray-400">
           <nav className="flex flex-wrap justify-center gap-4">
