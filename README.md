@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+# Piirto
+
+This app lives in https://piirto.app and it's based on our Tatami Canvas drawing engine.
+
+More information about this engine at https://docs.tatami.dev
+
+Follow Tatami Tuotanto at https://github.com/orgs/tatami-tuotanto
+
+
 ## Getting Started
 
 First, run the development server:
